@@ -16,41 +16,39 @@ namespace CalendarPlanner
 
         static void Main(string[] args)
         {
-            Calendar calendar = new Calendar();
+            while (true)
+            {
+                Calendar calendar = new Calendar();
 
-            Console.Clear();
-            Console.WriteLine("Welcome! What would you like to do?");
-            Console.WriteLine("Type the corresponding number then press enter to execute:");
-            Console.WriteLine("1: Create a new calendar-planner.");
-            Console.WriteLine("2: Add Plans.");
-            Console.WriteLine("3: Remove Plans.");
-            Console.WriteLine("4: Display your existing calendar-planner.");
-            Console.WriteLine();
-            Console.WriteLine("5: Close the application.");
-            string response = Console.ReadLine();
-            if (response == "1")
-            {
-                CreateCalendarPlanner();
-                AddPlan(ref calendar);
-                Main(args);
+                Console.Clear();
+                Console.WriteLine("Welcome! What would you like to do?");
+                Console.WriteLine("Type the corresponding number then press enter to execute:");
+                Console.WriteLine("1: Create a new calendar-planner.");
+                Console.WriteLine("2: Add Plans.");
+                Console.WriteLine("3: Remove Plans.");
+                Console.WriteLine("4: Display your existing calendar-planner.");
+                Console.WriteLine();
+                Console.WriteLine("5: Close the application.");
+                string response = Console.ReadLine();
+                if (response == "1")
+                {
+                    CreateCalendarPlanner();
+                    AddPlan(ref calendar);
+                }
+                else if (response == "2")
+                {
+                    AddPlan(ref calendar);                    
+                }
+                else if (response == "3")
+                {
+                    RemovePlan(ref calendar);                    
+                }
+                else if (response == "4")
+                {
+                    DisplayCalendarPlanner();                    
+                }
+                Console.ReadLine();
             }
-            else if (response == "2")
-            {
-                AddPlan(ref calendar);
-                Main(args);
-            }
-            else if (response == "3")
-            {
-                RemovePlan(ref calendar);
-                Main(args);
-            }
-            else if (response == "4")
-            {
-                DisplayCalendarPlanner();
-                Main(args);
-            }
-            Console.ReadLine();
-
 
         }
         static void CreateCalendarPlanner()

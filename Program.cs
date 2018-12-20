@@ -47,6 +47,10 @@ namespace CalendarPlanner
                 {
                     DisplayCalendarPlanner();                    
                 }
+                else if (response == "5")
+                {
+                    Environment.Exit(0);
+                }
                 Console.ReadLine();
             }
 

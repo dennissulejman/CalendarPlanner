@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,13 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
-
+using System.Threading;
 
 namespace CalendarPlanner
 {
     class Program
     {
-
         static void Main(string[] args)
         {
             while (true)
@@ -32,7 +31,7 @@ namespace CalendarPlanner
                 string response = Console.ReadLine();
                 if (response == "1")
                 {
-                    CreateCalendarPlanner();
+                    CreateCalendarPlanner(ref calendar);
                     AddPlan(ref calendar);
                 }
                 else if (response == "2")
@@ -53,16 +52,49 @@ namespace CalendarPlanner
                 }
                 Console.ReadLine();
             }
-
         }
-        static void CreateCalendarPlanner()
+
+        public static void CreateCalendarPlanner(ref Calendar calendar)
         {
             string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-            FileStream createNewPlanner = File.Create(path + @"\Calendar.csv");
-            createNewPlanner.Close();
+            
+            FileStream createNewPlanner;
+            bool detectCalendarPlanner = true;
+            while (detectCalendarPlanner)
+            {
+                if (File.Exists(path + @"\Calendar.csv"))
+                {
+                    Console.WriteLine("Found existing Calendar-Planner.");
+                    Console.WriteLine("Would you like to replace your current Planner?(y/n)");
+                    string response = Console.ReadLine();
+                    if (response == "y")
+                    {
+                        createNewPlanner = File.Create(path + @"\Calendar.csv");
+                        createNewPlanner.Close();
+                        detectCalendarPlanner = false;
+                    }
+                    else if (response == "n")
+                    {
+                        detectCalendarPlanner = false;
+                    }
+                    else
+                    {
+                        detectCalendarPlanner = true;
+                        Console.Clear();
+                        Console.WriteLine("Invalid input format, try again.");
+                        Console.WriteLine();
+                    }
+                }
+                else
+                {
+                    createNewPlanner = File.Create(path + @"\Calendar.csv");
+                    createNewPlanner.Close();
+                    detectCalendarPlanner = false;
+                }
+            }
         }
 
-        static void GetCalendarPlanner(ref Calendar calendar)
+        public static void GetCalendarPlanner(ref Calendar calendar)
         {
             string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
             StreamReader calendarReader = new StreamReader(path + @"\Calendar.csv");
@@ -82,6 +114,7 @@ namespace CalendarPlanner
             calendarReader.Close();
 
         }
+
         public static void DisplayCalendarPlanner()
         {
             string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
@@ -97,15 +130,14 @@ namespace CalendarPlanner
             StringBuilder Plans = new StringBuilder();
             Plans.AppendLine("My Calendar:");
             Plans.AppendLine();
-
             foreach (Plan plan in calendar.Plans.OrderBy(v => v.StartTime))
             {
-                Console.WriteLine(plan.Display);
+                Console.WriteLine(plan.Display, Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(plan.Activity));
+                string dsa = (plan.Display);
                 Plans.AppendLine(plan.Display);
                 File.WriteAllText(path + @"\Calendar.csv", Plans.ToString());
             }
         }
-
 
         public static void AddPlan(ref Calendar calendar)
         {
@@ -118,10 +150,11 @@ namespace CalendarPlanner
                 string activity = Console.ReadLine();
                 Console.WriteLine("Which date and time does it start?(dd/mm/yy hh:mm)");
                 string startTime = Console.ReadLine();
+                ValidateAddDateFormat(ref calendar, startTime);
                 Console.WriteLine("Until which date and time does it last?(dd/mm/yy hh:mm)");
                 string endTime = Console.ReadLine();
+                ValidateAddDateFormat(ref calendar, endTime);
                 calendar.AddPlanEntry(startTime, endTime, activity);
-
                 Console.WriteLine("Are you done adding plans?(y/n)");
                 string response = Console.ReadLine();
                 if (response == "n")
@@ -136,6 +169,7 @@ namespace CalendarPlanner
                 SaveCalendarPlanner(ref calendar);
             }
         }
+
         public static void RemovePlan(ref Calendar calendar)
         {
             GetCalendarPlanner(ref calendar);
@@ -143,12 +177,12 @@ namespace CalendarPlanner
             while (remove)
             {
                 Console.Clear();
-
                 Console.WriteLine("When is the plan you would like to remove?");
-                string removeDate = Console.ReadLine();
+                string removeDate = Console.ReadLine();               
                 Console.WriteLine("Which plan would you like to remove?");
-                string activity = Console.ReadLine();
-                calendar.RemovePlanEntry(removeDate, activity);
+                string activity = Console.ReadLine().ToUpper();
+                ValidateRemoveDateFormat(ref calendar, removeDate, activity.ToUpper());
+                calendar.RemovePlanEntry(removeDate, activity.ToUpper());
                 Console.WriteLine("Are you done removing plans?(y/n)");
                 string response = Console.ReadLine();
                 if (response == "n")
@@ -163,31 +197,37 @@ namespace CalendarPlanner
                 SaveCalendarPlanner(ref calendar);
             }
         }
-        public static void EditPlan(ref Calendar calendar)
-        {
-            GetCalendarPlanner(ref calendar);
-            bool edit = true;
-            while (edit)
-            {
-                Console.Clear();
 
-                Console.WriteLine("When is the plan you would like to edit?");
-                string removeDate = Console.ReadLine();
-                Console.WriteLine("Which plan would you like to remove?");
-                string activity = Console.ReadLine();
-                calendar.RemovePlanEntry(removeDate, activity);
-                Console.WriteLine("Are you done removing plans?(y/n)");
-                string response = Console.ReadLine();
-                if (response == "n")
-                {
-                    edit = true;
-                    Console.Clear();
-                }
-                else if (response == "y")
-                {
-                    edit = false;
-                }
-                SaveCalendarPlanner(ref calendar);
+        public static void ValidateAddDateFormat(ref Calendar calendar, string date)
+        {
+            bool addDateFormat = true;
+            addDateFormat &= DateTime.TryParse(date, out DateTime result);
+
+            if (!addDateFormat)
+            {
+                Console.WriteLine("This is not a valid date format, try again.");
+                Console.ReadLine();
+                AddPlan(ref calendar);
+            }          
+        }
+
+        public static void ValidateRemoveDateFormat(ref Calendar calendar, string date, string activity)
+        {
+            bool removeDateFormat = true;
+            bool planActivity = true;
+            removeDateFormat &= DateTime.TryParse(date, out DateTime result);
+            planActivity &= calendar.Plans.Exists(x => x.Activity.ToUpper() == activity.ToUpper());
+            if (!removeDateFormat)
+            {
+                Console.WriteLine("This is not a valid date format, try again.");
+                Console.ReadLine();
+                RemovePlan(ref calendar);
+            }
+            else if (!planActivity)
+            {
+                Console.WriteLine("There is no such activity planned, try again.");
+                Console.ReadLine();
+                RemovePlan(ref calendar);
             }
         }
     }

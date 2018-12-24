@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -36,15 +36,15 @@ namespace CalendarPlanner
                 }
                 else if (response == "2")
                 {
-                    AddPlan(ref calendar);                    
+                    AddPlan(ref calendar);
                 }
                 else if (response == "3")
                 {
-                    RemovePlan(ref calendar);                    
+                    RemovePlan(ref calendar);
                 }
                 else if (response == "4")
                 {
-                    DisplayCalendarPlanner();                    
+                    DisplayCalendarPlanner();
                 }
                 else if (response == "5")
                 {
@@ -57,7 +57,7 @@ namespace CalendarPlanner
         public static void CreateCalendarPlanner(ref Calendar calendar)
         {
             string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-            
+
             FileStream createNewPlanner;
             bool detectCalendarPlanner = true;
             while (detectCalendarPlanner)
@@ -178,7 +178,7 @@ namespace CalendarPlanner
             {
                 Console.Clear();
                 Console.WriteLine("When is the plan you would like to remove?");
-                string removeDate = Console.ReadLine();               
+                string removeDate = Console.ReadLine();
                 Console.WriteLine("Which plan would you like to remove?");
                 string activity = Console.ReadLine().ToUpper();
                 ValidateRemoveDateFormat(ref calendar, removeDate, activity.ToUpper());
@@ -208,7 +208,7 @@ namespace CalendarPlanner
                 Console.WriteLine("This is not a valid date format, try again.");
                 Console.ReadLine();
                 AddPlan(ref calendar);
-            }          
+            }
         }
 
         public static void ValidateRemoveDateFormat(ref Calendar calendar, string date, string activity)

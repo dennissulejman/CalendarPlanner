@@ -149,6 +149,26 @@
     <Compile Include="Migrations\20190101123239_InitialCreate.designer.cs">
       <DependentUpon>20190101123239_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20190107085114_Second-Migration.cs" />
+    <Compile Include="Migrations\20190107085114_Second-Migration.designer.cs">
+      <DependentUpon>20190107085114_Second-Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20190107091029_Third-Migration.cs" />
+    <Compile Include="Migrations\20190107091029_Third-Migration.designer.cs">
+      <DependentUpon>20190107091029_Third-Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20190107091359_Fourth-Migration.cs" />
+    <Compile Include="Migrations\20190107091359_Fourth-Migration.designer.cs">
+      <DependentUpon>20190107091359_Fourth-Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20190107093658_Fifth-Migration.cs" />
+    <Compile Include="Migrations\20190107093658_Fifth-Migration.designer.cs">
+      <DependentUpon>20190107093658_Fifth-Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20190107100650_Sixth-Migration.cs" />
+    <Compile Include="Migrations\20190107100650_Sixth-Migration.designer.cs">
+      <DependentUpon>20190107100650_Sixth-Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\CalendarContextModelSnapshot.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

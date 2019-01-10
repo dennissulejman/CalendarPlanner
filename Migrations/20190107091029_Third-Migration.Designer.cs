@@ -4,14 +4,16 @@ using CalendarPlanner;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Calendar.Migrations
 {
     [DbContext(typeof(CalendarContext))]
-    partial class CalendarContextModelSnapshot : ModelSnapshot
+    [Migration("20190107091029_Third-Migration")]
+    partial class ThirdMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,8 +26,6 @@ namespace Calendar.Migrations
                     b.Property<int>("CalendarId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Username");
 
                     b.HasKey("CalendarId");
 
@@ -53,33 +53,10 @@ namespace Calendar.Migrations
                     b.ToTable("Plans");
                 });
 
-            modelBuilder.Entity("CalendarPlanner.User", b =>
-                {
-                    b.Property<string>("Username")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("CalendarId");
-
-                    b.Property<string>("Password");
-
-                    b.HasKey("Username");
-
-                    b.HasIndex("CalendarId");
-
-                    b.ToTable("Users");
-                });
-
             modelBuilder.Entity("CalendarPlanner.Plan", b =>
                 {
                     b.HasOne("CalendarPlanner.Calendar", "Calendar")
                         .WithMany("Plans")
-                        .HasForeignKey("CalendarId");
-                });
-
-            modelBuilder.Entity("CalendarPlanner.User", b =>
-                {
-                    b.HasOne("CalendarPlanner.Calendar", "Calendar")
-                        .WithMany("Users")
                         .HasForeignKey("CalendarId");
                 });
 #pragma warning restore 612, 618

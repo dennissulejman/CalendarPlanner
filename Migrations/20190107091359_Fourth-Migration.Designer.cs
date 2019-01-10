@@ -4,14 +4,16 @@ using CalendarPlanner;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Calendar.Migrations
 {
     [DbContext(typeof(CalendarContext))]
-    partial class CalendarContextModelSnapshot : ModelSnapshot
+    [Migration("20190107091359_Fourth-Migration")]
+    partial class FourthMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,8 +26,6 @@ namespace Calendar.Migrations
                     b.Property<int>("CalendarId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Username");
 
                     b.HasKey("CalendarId");
 
@@ -79,7 +79,7 @@ namespace Calendar.Migrations
             modelBuilder.Entity("CalendarPlanner.User", b =>
                 {
                     b.HasOne("CalendarPlanner.Calendar", "Calendar")
-                        .WithMany("Users")
+                        .WithMany()
                         .HasForeignKey("CalendarId");
                 });
 #pragma warning restore 612, 618

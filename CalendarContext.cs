@@ -15,7 +15,9 @@ namespace CalendarPlanner
     public class CalendarContext : DbContext
     {
         public DbSet<Calendar> Calendars { get; set; }
+        public DbSet<User> Users { get; set; }
         public DbSet<Plan> Plans { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -23,6 +25,5 @@ namespace CalendarPlanner
             .ConnectionString, options => options.EnableRetryOnFailure())
             .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
         }
-
     }
 }

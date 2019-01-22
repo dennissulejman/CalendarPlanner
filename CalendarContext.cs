@@ -81,7 +81,7 @@ namespace CalendarPlanner
                                 && p.Activity.ToUpper() == activity.ToUpper());
             foreach (var plan in plansToRemove)
             {
-                Plans.Remove(plan);
+                Plans.RemoveRange(plan);
             }
             SaveChanges();
             DetachAllEntities();

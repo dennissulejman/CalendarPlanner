@@ -17,8 +17,6 @@ namespace CalendarPlanner
     {
         static void Main(string[] args)
         {
-            //TO DO: Handle exceptions when inexistent user is entered.
-
             while (true)
             {
                 CalendarContext db = new CalendarContext();
@@ -211,11 +209,9 @@ namespace CalendarPlanner
                 {
                     Console.WriteLine("The password was not confirmed!");
                     Console.WriteLine("Press enter to try again.");
-                    Console.ReadLine();                    
-                    passwordConfirmation = true;
-                    return null;
+                    Console.ReadLine();
+                    UserCreation(ref db);
                 }
-                return null;
             }
             return null;
         }
@@ -306,7 +302,7 @@ namespace CalendarPlanner
         public static string UserPasswordMasking()
         {
             ConsoleKeyInfo key;
-            string passWord = null;
+            string passWord = string.Empty;
             do
             {
                 key = Console.ReadKey(true);
@@ -343,16 +339,20 @@ namespace CalendarPlanner
 
         public static void UserGetHashedPassword(ref CalendarContext db, string userName, string passWord)
         {
-            var savedPasswordHash = db.Users.Where(u => u.Username == userName).SingleOrDefault().Password;
+            UserAuthentication(ref db, userName, passWord);
+            string savedPasswordHash = db.Users.Where(u => u.Username == userName)
+            .SingleOrDefault().Password;
+
             byte[] hashBytes = Convert.FromBase64String(savedPasswordHash);
             byte[] salt = new byte[16];
             Array.Copy(hashBytes, 0, salt, 0, 16);
             var pbkdf2 = new Rfc2898DeriveBytes(passWord, salt, 10000);
+            ConvertToHashedPassword(ref db, passWord, salt);
             byte[] hash = pbkdf2.GetBytes(20);
             for (int i = 0; i < 20; i++)
                 if (hashBytes[i + 16] == hash[i])
                 {
-                    UserAuthentication(ref db, userName, savedPasswordHash);
+                    UserAuthentication(ref db, userName, passWord);
                 }
                 else if (hashBytes[i + 16] != hash[i])
                 {
@@ -364,15 +364,40 @@ namespace CalendarPlanner
                 }
         }
 
-        public static void UserAuthentication(ref CalendarContext db, string userName, string savedPasswordHash)
+        public static void UserAuthentication(ref CalendarContext db, string userName, string passWord)
         {
             try
             {
-                var existingUser = db.Users.Single(u => u.Username == userName && u.Password == savedPasswordHash);
+                string existingUser = db.Users.Single(u => u.Username == userName).ToString();
             }
             catch (InvalidOperationException)
             {
-                Console.WriteLine("Wrong information! Try again.");
+                Console.WriteLine("User does not exist!");
+                Console.WriteLine("Press enter to try again.");
+                Console.ReadLine();                
+                UserLogin(ref db);
+            }
+            catch (NullReferenceException)
+            {
+                Console.WriteLine("User does not exist!");
+                Console.WriteLine("Press enter to try again.");
+                Console.ReadLine();
+                UserLogin(ref db);
+            }
+            string savedPasswordHash = db.Users.Where(u => u.Username == userName)
+                                    .SingleOrDefault().Password;
+        }
+
+        public static void ConvertToHashedPassword(ref CalendarContext db, string passWord, byte[] salt)
+        {
+            try
+            {
+                var pbkdf2 = new Rfc2898DeriveBytes(passWord, salt, 10000);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Password is incorrect!");
+                Console.WriteLine("Press enter to try again.");
                 Console.ReadLine();
                 UserLogin(ref db);
             }
